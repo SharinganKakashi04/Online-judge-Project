@@ -1,0 +1,74 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Online Judge - Home</title>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <!-- Auth snippet -->
+            {% if user.is_authenticated %}
+                <div class="user-info">
+                    <p>Welcome, {{ user.username }}!</p>
+                    <a href="{% url 'logout' %}">Logout</a>
+                </div>
+            {% else %}
+                <div class="login-prompt">
+                    <a href="{% url 'login' %}">Login</a> | 
+                    <a href="{% url 'signup' %}">Sign Up</a>
+                </div>
+            {% endif %}
+
+            <h1>🚀 Online Judge</h1>
+            <p>Master your coding skills with our comprehensive platform</p>
+        </div>
+        
+        <div class="stats">
+            <div class="stat-item">
+                <div class="stat-number">∞</div>
+                <div class="stat-label">Problems</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">🔥</div>
+                <div class="stat-label">Active Users</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">⚡</div>
+                <div class="stat-label">Fast Execution</div>
+            </div>
+        </div>
+        
+        <div class="nav-grid">
+            <div class="nav-card problems">
+                <span class="icon">🧩</span>
+                <h3>Problems</h3>
+                <p>Browse coding challenges, view problem statements, and start solving!</p>
+                <a href="{% url 'problem_list' %}">Explore Problems</a>
+            </div>
+            
+            <div class="nav-card submissions">
+                <span class="icon">📝</span>
+                <h3>Submissions</h3>
+                <p>View all submissions, track your progress, and analyze your solutions.</p>
+                <a href="{% url 'submissions:list' %}">View Submissions</a>
+            </div>
+            
+            <div class="nav-card people">
+                <span class="icon">👥</span>
+                <h3>Login/Signup</h3>
+                <p>Login to your account or create a new one</p>
+                <a href="/people/login">Login/Signup</a>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>Built with Django 🐍 | Powered by Docker 🐳</p>
+            <p>Happy Coding! 💻</p>
+        </div>
+    </div>
+</body>
+</html>

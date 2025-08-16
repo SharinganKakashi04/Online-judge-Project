@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ problem.title }} - Online Judge</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 20px;
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 20px;
+            height: 100vh;
+        }
+        
+        .left-panel {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            overflow-y: auto;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        
+        .right-panel {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .breadcrumb {
+            margin-bottom: 20px;
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .breadcrumb a {
+            color: #667eea;
+            text-decoration: none;
+        }
+        
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+        
+        .problem-header {
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        
+        .problem-title {
+            font-size: 2.2rem;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 15px;
+        }
+        
+        .problem-meta {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .meta-tag {
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        
+        .difficulty {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .difficulty.medium {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .difficulty.hard {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .time-limit {
+            background: #e2e3e5;
+            color: #383d41;
+        }
+        
+        .memory-limit {
+            background: #cce7ff;
+            color: #004085;
+        }
+        
+        .problem-content {
+            line-height: 1.8;
+            color: #333;
+        }
+        
+        .section {
+            margin-bottom: 30px;
+        }
+        
+        .section h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .section p {
+            margin-bottom: 15px;
+        }
+        
+        .example-box {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .example-label {
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        
+        .code-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .editor-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        
+        .editor-title {
+            font-size: 1.5rem;
+            color: #667eea;
+            font-weight: 600;
+        }
+        
+        .language-selector {
+            padding: 8px 16px;
+            border: 2px solid #667eea;
+            border-radius: 25px;
+            background: white;
+            color: #667eea;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        
+        .code-editor {
+            flex: 1;
+            border: 2px solid #e9ecef;
+            border-radius: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            padding: 20px;
+            resize: none;
+            outline: none;
+            background: #1e1e1e;
+            color: #d4d4d4;
+            margin-bottom: 20px;
+            min-height: 300px;
+            width: 100%;
+        }
+        
+        .code-editor:focus {
+            border-color: #667eea;
+        }
+        
+        .input-section {
+            margin-bottom: 20px;
+        }
+        
+        .input-label {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+            display: block;
+        }
+        
+        .custom-input {
+            width: 100%;
+            min-height: 80px;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 15px;
+            font-family: 'Courier New', monospace;
+            resize: vertical;
+            outline: none;
+        }
+        
+        .custom-input:focus {
+            border-color: #667eea;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: flex-end;
+        }
+        
+        .btn {
+            padding: 12px 25px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        
+        .btn-run {
+            background: #28a745;
+            color: white;
+        }
+        
+        .btn-submit {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+        
+        .btn:active {
+            transform: translateY(0);
+        }
+        
+        .result-section {
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 15px;
+            display: none;
+        }
+        
+        .result-success {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+        }
+        
+        .result-error {
+            background: #f8d7da;
+            border-left: 4px solid #dc3545;
+        }
+        
+        .result-output {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 15px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            white-space: pre-wrap;
+            margin-top: 10px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+            color: #667eea;
+        }
+        
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+        
+        .status-solved {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status-attempted {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        @media (max-width: 1200px) {
+            .container {
+                grid-template-columns: 1fr;
+                gap: 20px;
+                height: auto;
+            }
+            
+            .left-panel {
+                max-height: 50vh;
+            }
+            
+            .problem-title {
+                font-size: 1.8rem;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .left-panel,
+            .right-panel {
+                padding: 20px;
+            }
+            
+            .problem-meta {
+                justify-content: center;
+            }
+            
+            .action-buttons {
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+        }
+        
+        .constraints {
+            background: #e8f4f8;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        
+        .constraints h4 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        
+        .constraints ul {
+            margin-left: 20px;
+            color: #555;
+        }
+        
+        .constraints li {
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Left Panel - Problem Description -->
+        <div class="left-panel">
+            <div class="breadcrumb">
+                <a href="{% url 'home' %}">🏠 Home</a> / 
+                <a href="{% url 'problem_list' %}">Problems</a> / 
+                {{ problem.title }}
+            </div>
+            
+            <div class="problem-header">
+                <h1 class="problem-title">
+                    {{ problem.title }}
+                    {% if user.is_authenticated %}
+                        <span class="status-badge status-solved">Solved</span>
+                    {% endif %}
+                </h1>
+                <div class="problem-meta">
+                    <div class="meta-tag difficulty">{{ problem.difficulty|default:'Easy' }}</div>
+                    <div class="meta-tag time-limit">⏱️ {{ problem.time_limit|default:'1s' }}</div>
+                    <div class="meta-tag memory-limit">💾 {{ problem.memory_limit|default:'256MB' }}</div>
+                </div>
+            </div>
+            
+            <div class="problem-content">
+                <div class="section">
+                    <h3>📋 Problem Statement</h3>
+                    <p>{{ problem.description|default:'Problem description will appear here...' }}</p>
+                </div>
+                
+                <div class="section">
+                    <h3>📥 Input Format</h3>
+                    <p>{{ problem.input_format|default:'Input format details...' }}</p>
+                </div>
+                
+                <div class="section">
+                    <h3>📤 Output Format</h3>
+                    <p>{{ problem.output_format|default:'Output format details...' }}</p>
+                </div>
+                
+                <div class="constraints">
+                    <h4>📏 Constraints</h4>
+                    <ul>
+                        <li>{{ problem.constraints|default:'1 ≤ N ≤ 10^5' }}</li>
+                        <li>Time Limit: {{ problem.time_limit|default:'1 second' }}</li>
+                        <li>Memory Limit: {{ problem.memory_limit|default:'256 MB' }}</li>
+                    </ul>
+                </div>
+                
+                <div class="section">
+                    <h3>💡 Example</h3>
+                    <div class="example-box">
+                        <div class="example-label">Input:</div>
+                        <div>{{ problem.sample_input|default:'3
+1 2 3' }}</div>
+                    </div>
+                    <div class="example-box">
+                        <div class="example-label">Output:</div>
+                        <div>{{ problem.sample_output|default:'6' }}</div>
+                    </div>
+                </div>
+                
+                {% if problem.explanation %}
+                <div class="section">
+                    <h3>🔍 Explanation</h3>
+                    <p>{{ problem.explanation }}</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Right Panel - Code Editor -->
+        <div class="right-panel">
+            <div class="editor-header">
+                <h2 class="editor-title">💻 Code Editor</h2>
+                <select class="language-selector" id="languageSelect">
+                    <option value="python">🐍 Python</option>
+                    <option value="cpp">⚡ C++</option>
+                    <option value="java">☕ Java</option>
+                    <option value="javascript">🟨 JavaScript</option>
+                </select>
+            </div>
+            
+            <form method="post" action="{% url 'submissions:submit_code' problem.id %}" id="codeForm">
+                {% csrf_token %}
+                <textarea 
+                    class="code-editor" 
+                    name="code" 
+                    id="codeEditor" 
+                    placeholder="# Write your solution here...
+def solve():
+    # Your code here
+    pass
+
+solve()"
+                ></textarea>
+                
+                <input type="hidden" name="language" id="languageInput" value="python">
+                <input type="hidden" name="action" id="actionInput" value="submit">
+                
+                <div class="input-section">
+                    <label class="input-label" for="customInput">🧪 Custom Test Input (Optional):</label>
+                    <textarea 
+                        class="custom-input" 
+                        id="customInput" 
+                        name="custom_input"
+                        placeholder="Enter your test input here..."
+                    ></textarea>
+                </div>
+                
+                <div class="action-buttons">
+                    <button type="button" class="btn btn-run" onclick="runCode()">
+                        ▶️ Run Code
+                    </button>
+                    <button type="submit" class="btn btn-submit" onclick="submitCode()">
+                        🚀 Submit Solution
+                    </button>
+                </div>
+            </form>
+            
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p>Running your code...</p>
+            </div>
+            
+            <div class="result-section" id="resultSection">
+                <h4>📊 Output:</h4>
+                <div class="result-output" id="resultOutput"></div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const languageSelect = document.getElementById('languageSelect');
+        const languageInput = document.getElementById('languageInput');
+        const codeEditor = document.getElementById('codeEditor');
+        const actionInput = document.getElementById('actionInput');
+        
+        const codeTemplates = {
+            python: `# Write your solution here...
+def solve():
+    # Your code here
+    pass
+
+solve()`,
+            cpp: `#include<iostream>
+#include<vector>
+using namespace std;
+
+int main(){
+    // Your code here
+    
+    return 0;
+}`,
+            java: `import java.util.*;
+
+public class Solution {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        // Your code here
+        
+        sc.close();
+    }
+}`,
+            javascript: `// Write your solution here...
+const readline = require('readline');
+
+const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout
+});
+
+rl.on('line', (input) => {
+    // Your code here
+    
+    rl.close();
+});`
+        };
+        
+        languageSelect.addEventListener('change', function() {
+            const selectedLang = this.value;
+            languageInput.value = selectedLang;
+            codeEditor.value = codeTemplates[selectedLang];
+        });
+        
+        function runCode() {
+            const code = codeEditor.value;
+            const language = languageSelect.value;
+            const customInput = document.getElementById('customInput').value;
+            
+            if (!code.trim()) {
+                alert('Please write some code first!');
+                return;
+            }
+            
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('resultSection').style.display = 'none';
+            
+            fetch(`{% url 'submissions:run_code_ajax' problem.id %}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                },
+                body: JSON.stringify({
+                    code: code,
+                    language: language,
+                    input_data: customInput
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('loading').style.display = 'none';
+                const resultSection = document.getElementById('resultSection');
+                const resultOutput = document.getElementById('resultOutput');
+                
+                resultSection.style.display = 'block';
+                
+                if (data.error) {
+                    resultSection.className = 'result-section result-error';
+                    resultOutput.textContent = `Error: ${data.error}`;
+                } else {
+                    resultSection.className = 'result-section result-success';
+                    resultOutput.textContent = `Output:\n${data.output}\n\nRuntime: ${data.runtime.toFixed(3)}s`;
+                }
+            })
+            .catch(error => {
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('resultSection').style.display = 'block';
+                document.getElementById('resultSection').className = 'result-section result-error';
+                document.getElementById('resultOutput').textContent = 'Error: Failed to run code';
+            });
+        }
+        
+        function submitCode() {
+            actionInput.value = 'submit';
+            if (!codeEditor.value.trim()) {
+                alert('Please write some code before submitting!');
+                return false;
+            }
+            return true;
+        }
+        
+        // Auto-resize code editor
+        function autoResize() {
+            codeEditor.style.height = 'auto';
+            codeEditor.style.height = Math.max(300, codeEditor.scrollHeight) + 'px';
+        }
+        
+        codeEditor.addEventListener('input', autoResize);
+        
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            if (e.ctrlKey && e.key === 'Enter') {
+                runCode();
+            }
+            if (e.ctrlKey && e.key === 's') {
+                e.preventDefault();
+                submitCode();
+                document.getElementById('codeForm').submit();
+            }
+        });
+        
+        // Initialize
+        languageInput.value = 'python';
+    </script>
+</body>
+</html>

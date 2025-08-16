@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Submissions</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #1a1a2e;
+            color: white;
+            margin: 0;
+            padding: 20px;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #8B5CF6, #A855F7);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .filters {
+            background: #16213e;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        
+        .filter-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #9ca3af;
+        }
+        
+        .filter-group input, .filter-group select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #374151;
+            border-radius: 5px;
+            background: #1f2937;
+            color: white;
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .stat-card {
+            background: #16213e;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #8B5CF6;
+        }
+        
+        .submissions-table {
+            background: #16213e;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .table-header {
+            background: #8B5CF6;
+            padding: 15px;
+            display: grid;
+            grid-template-columns: 50px 1fr 1fr 1fr 1fr 100px 150px;
+            gap: 15px;
+            font-weight: bold;
+        }
+        
+        .submission-row {
+            padding: 15px;
+            display: grid;
+            grid-template-columns: 50px 1fr 1fr 1fr 1fr 100px 150px;
+            gap: 15px;
+            border-bottom: 1px solid #374151;
+            align-items: center;
+        }
+        
+        .submission-row:hover {
+            background: rgba(139, 92, 246, 0.1);
+        }
+        
+        .verdict {
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: bold;
+            text-align: center;
+        }
+        
+        .verdict.accepted {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+            border: 1px solid #10b981;
+        }
+        
+        .verdict.wrong-answer {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+            border: 1px solid #ef4444;
+        }
+        
+        .verdict.judging {
+            background: rgba(251, 191, 36, 0.2);
+            color: #fbbf24;
+            border: 1px solid #fbbf24;
+        }
+        
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .pagination a, .pagination span {
+            padding: 8px 12px;
+            background: #16213e;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+        
+        .pagination .current {
+            background: #8B5CF6;
+        }
+        .breadcrumb {
+            margin-bottom: 20px;
+            color: #e0e0e0; /* A light color to be visible on the dark background */
+            font-size: 0.9rem;
+            padding: 10px 0;
+        }
+
+        .breadcrumb a {
+            color: #64ffda; /* A bright, contrasting color for the link */
+            text-decoration: none;
+        }
+
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+        .pagination a:hover {
+            background: #8B5CF6;
+        }
+        
+        .no-submissions {
+            text-align: center;
+            padding: 40px;
+            color: #9ca3af;
+        }
+    </style>
+</head>
+<body>
+    <div class="breadcrumb">
+        <a href="{% url 'home' %}">🏠 Home</a> / Submissions
+    </div>
+    <div class="header">
+        <h1>Your Submissions</h1>
+    </div>
+    
+    <!-- Statistics -->
+    <div class="stats">
+        <div class="stat-card">
+            <div class="stat-value">{{ total_submissions }}</div>
+            <div>Total Submissions</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">{{ accepted_submissions }}</div>
+            <div>Accepted</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">{{ acceptance_rate }}%</div>
+            <div>Acceptance Rate</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">{{ languages_count }}</div>
+            <div>Languages Used</div>
+        </div>
+    </div>
+    
+    <!-- Filters -->
+    <form class="filters" method="GET">
+        <div class="filter-group">
+            <label>Problem</label>
+            <input type="text" name="problem" placeholder="Filter by problem" value="{{ problem_filter }}">
+        </div>
+        <div class="filter-group">
+            <label>Language</label>
+            <select name="language">
+                <option value="">All Languages</option>
+                <option value="python" {% if language_filter == 'python' %}selected{% endif %}>Python</option>
+                <option value="cpp" {% if language_filter == 'cpp' %}selected{% endif %}>C++</option>
+                <option value="java" {% if language_filter == 'java' %}selected{% endif %}>Java</option>
+                <option value="javascript" {% if language_filter == 'javascript' %}selected{% endif %}>JavaScript</option>
+            </select>
+        </div>
+        <div class="filter-group">
+            <label>Verdict</label>
+            <select name="verdict">
+                <option value="">All Verdicts</option>
+                <option value="Accepted" {% if verdict_filter == 'Accepted' %}selected{% endif %}>Accepted</option>
+                <option value="Wrong Answer" {% if verdict_filter == 'Wrong Answer' %}selected{% endif %}>Wrong Answer</option>
+                <option value="Time Limit Exceeded" {% if verdict_filter == 'Time Limit Exceeded' %}selected{% endif %}>Time Limit Exceeded</option>
+                <option value="Runtime Error" {% if verdict_filter == 'Runtime Error' %}selected{% endif %}>Runtime Error</option>
+                <option value="Judging" {% if verdict_filter == 'Judging' %}selected{% endif %}>Judging</option>
+            </select>
+        </div>
+        <div class="filter-group">
+            <label>&nbsp;</label>
+            <button type="submit" style="padding: 8px 16px; background: #8B5CF6; color: white; border: none; border-radius: 5px; cursor: pointer;">Filter</button>
+        </div>
+    </form>
+    
+    <!-- Submissions Table -->
+    <div class="submissions-table">
+        <div class="table-header">
+            <div>#</div>
+            <div>USER</div>
+            <div>PROBLEM</div>
+            <div>LANGUAGE</div>
+            <div>VERDICT</div>
+            <div>TIME</div>
+            <div>SUBMITTED</div>
+        </div>
+        
+        {% if submissions %}
+            {% for submission in submissions %}
+            <div class="submission-row">
+                <div>{{ forloop.counter }}</div>
+                <div>{{ submission.user.username }}</div>
+                <div>{{ submission.problem.title }}</div>
+                <div>{{ submission.language|upper }}</div>
+                <div>
+                    <span class="verdict {% if submission.verdict == 'Accepted' %}accepted{% elif submission.verdict == 'Judging' %}judging{% else %}wrong-answer{% endif %}">
+                        {{ submission.verdict }}
+                    </span>
+                </div>
+                <div>
+                    {% if submission.runtime %}
+                        {{ submission.runtime }}ms
+                    {% else %}
+                        -
+                    {% endif %}
+                </div>
+                <div>{{ submission.submitted_at|date:"M d, H:i" }}</div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="no-submissions">
+                <h3>No submissions found</h3>
+                <p>You haven't made any submissions yet, or no submissions match your current filters.</p>
+            </div>
+        {% endif %}
+    </div>
+    
+    <!-- Pagination -->
+    {% if submissions.has_other_pages %}
+    <div class="pagination">
+        {% if submissions.has_previous %}
+            <a href="?page=1{% if problem_filter %}&problem={{ problem_filter }}{% endif %}{% if language_filter %}&language={{ language_filter }}{% endif %}{% if verdict_filter %}&verdict={{ verdict_filter }}{% endif %}">&laquo; First</a>
+            <a href="?page={{ submissions.previous_page_number }}{% if problem_filter %}&problem={{ problem_filter }}{% endif %}{% if language_filter %}&language={{ language_filter }}{% endif %}{% if verdict_filter %}&verdict={{ verdict_filter }}{% endif %}">&lsaquo; Previous</a>
+        {% endif %}
+        
+        <span class="current">
+            Page {{ submissions.number }} of {{ submissions.paginator.num_pages }}
+        </span>
+        
+        {% if submissions.has_next %}
+            <a href="?page={{ submissions.next_page_number }}{% if problem_filter %}&problem={{ problem_filter }}{% endif %}{% if language_filter %}&language={{ language_filter }}{% endif %}{% if verdict_filter %}&verdict={{ verdict_filter }}{% endif %}">Next &rsaquo;</a>
+            <a href="?page={{ submissions.paginator.num_pages }}{% if problem_filter %}&problem={{ problem_filter }}{% endif %}{% if language_filter %}&language={{ language_filter }}{% endif %}{% if verdict_filter %}&verdict={{ verdict_filter }}{% endif %}">Last &raquo;</a>
+        {% endif %}
+    </div>
+    {% endif %}
+</body>
+</html>
