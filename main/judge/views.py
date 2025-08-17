@@ -5,6 +5,8 @@ from django.shortcuts import get_object_or_404
 from .models import Problem, Submission
 from .tasks import compile_and_run, judge_solution
 from celery.result import AsyncResult
+from judge.models import Submission
+
 
 # -----------------------------
 # 1. Run with custom input (like IDE "Run" button)
@@ -55,6 +57,14 @@ def submit_code(request, slug):
 
 # -----------------------------
 # 3. Check async task status
+@require_GET
+def submission_status(request):
+    tid = request.GET.get("task_id")
+    res = AsyncResult(tid)
+    if not res.ready():
+        return JsonResponse({"ready": False})
+    return JsonResponse({"ready": True, "result": res.result})
+
 # -----------------------------
 @require_GET
 def task_status(request):

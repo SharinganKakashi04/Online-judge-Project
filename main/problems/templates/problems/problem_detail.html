@@ -476,7 +476,7 @@
                 </select>
             </div>
             
-            <form method="post" action="{% url 'submissions:submit_code' problem.id %}" id="codeForm">
+            <form method="post" action="{% url 'judge:submit_code' problem.id %}" id="codeForm">
                 {% csrf_token %}
                 <textarea 
                     class="code-editor" 

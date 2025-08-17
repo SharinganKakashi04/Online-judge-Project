@@ -1,6 +1,7 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import Problem
-from submissions.models import Submission
+from judge.models import Submission
+
 
 def problem_list(request):
     problems = Problem.objects.all()
