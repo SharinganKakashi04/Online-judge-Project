@@ -10,5 +10,6 @@ urlpatterns = [
     path('people/', include('people.urls')),
     path('problems/', include('problems.urls')),
     path('submissions/', include('submissions.urls')),
+    path("", include("judge.urls")),
 ]
     

@@ -1,20 +1,13 @@
-# Base image (lightweight Linux + build tools)
+# oj runner image with C/C++/Python/Java
 FROM ubuntu:22.04
 
-# Avoid user input prompts during installation
 ENV DEBIAN_FRONTEND=noninteractive
-
-# Install compilers & runtimes
-RUN apt-get update && apt-get install -y \
-    python3 python3-pip \
-    g++ \
-    openjdk-17-jdk \
-    nodejs npm \
-    && apt-get clean
-
-# Create a sandbox folder
-RUN mkdir /sandbox
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    bash ca-certificates build-essential g++ gcc \
+    python3 python3-pip openjdk-17-jdk-headless \
+  && rm -rf /var/lib/apt/lists/*
+    
+# non-root user for safety
+RUN useradd -ms /bin/bash runner
+USER runner
 WORKDIR /sandbox
-
-# Set default command (can be overridden)
-CMD ["bash"]

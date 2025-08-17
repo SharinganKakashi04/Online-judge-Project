@@ -1,5 +1,3 @@
-# Online_judge_Project/celery.py
-import os
 import os
 from celery import Celery
 

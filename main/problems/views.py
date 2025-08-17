@@ -1,6 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import Problem
-from submissions.models import submissions
+from submissions.models import Submission
 
 def problem_list(request):
     problems = Problem.objects.all()
@@ -10,7 +10,7 @@ def problem_detail(request, pk):
     problem = get_object_or_404(Problem, pk=pk)
     if request.method == "POST":
         code = request.POST.get("code")
-        submissions.objects.create(
+        Submission.objects.create(
             problem=problem,
             user=request.user,
             code=code,
